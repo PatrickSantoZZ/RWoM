@@ -4007,6 +4007,17 @@ namespace TorannMagic
             return result;
         }
 
+        // Spell warmup scales with AimingDelayFactor. That stat is disabled for pawns that cannot shoot
+        // (e.g. incapable of violence), and reading it then logs a red error, so they cast at the base speed.
+        public static float GetCastWarmupFactor(Pawn p)
+        {
+            if (StatDefOf.AimingDelayFactor.Worker.IsDisabledFor(p))
+            {
+                return 1f;
+            }
+            return p.GetStatValue(StatDefOf.AimingDelayFactor, false);
+        }
+
         public static float GetWeaponCritChance(ThingWithComps weapon)
         {
             float weaponMass = weapon.GetStatValue(StatDefOf.Mass, false);

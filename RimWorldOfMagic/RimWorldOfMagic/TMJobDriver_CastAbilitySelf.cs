@@ -88,7 +88,7 @@ namespace TorannMagic
                 {
                     try
                     {
-                        this.duration = (int)((this.verb.verbProps.warmupTime * 60) * this.pawn.GetStatValue(StatDefOf.AimingDelayFactor, false));
+                        this.duration = (int)((this.verb.verbProps.warmupTime * 60) * TM_Calc.GetCastWarmupFactor(this.pawn));
                     }
                     catch
                     {

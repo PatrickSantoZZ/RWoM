@@ -51,7 +51,7 @@ namespace TorannMagic
             {
                 if(ability != null)
                 {
-                    this.duration = (int)(ability.Def.MainVerb.warmupTime * 60 * this.pawn.GetStatValue(StatDefOf.AimingDelayFactor, false));
+                    this.duration = (int)(ability.Def.MainVerb.warmupTime * 60 * TM_Calc.GetCastWarmupFactor(this.pawn));
                 }
                 if (age > duration)
                 {
