@@ -25,7 +25,6 @@ namespace TorannMagic
         private IntVec3 meshStart = IntVec3.Invalid;
         private IntVec3 meshEnd = IntVec3.Invalid;
         private Mesh boltMesh = null;
-        private static List<Mesh> boltMeshes = new List<Mesh>();
         private static readonly SkyColorSet MeshSkyColors = new SkyColorSet(new Color(0.9f, 0.95f, 1f), new Color(0.784313738f, 0.8235294f, 0.847058833f), new Color(0.9f, 0.95f, 1f), 1.15f);
         private Material meshMat;
         private AltitudeLayer altitudeLayer;
@@ -94,7 +93,6 @@ namespace TorannMagic
                     {
                         mesh = TM_MeshMaker.NewBoltMesh(200, this.meshContortionMagnitude);
                     }
-                    TM_MapMesh.boltMeshes.Add(mesh);
                     result = mesh;
                 //}
                 //else

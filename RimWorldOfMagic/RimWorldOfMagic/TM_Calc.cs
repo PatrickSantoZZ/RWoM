@@ -3936,8 +3936,29 @@ namespace TorannMagic
         public static Dictionary<Pawn, float> DamageCache = new Dictionary<Pawn, float>();
         private static int DamageCacheTimer = 0;
 
+        // The caches are only cleared once TicksAbs passes the timers. After loading a save with less elapsed time
+        // that took until the new game caught up, keeping the previous game's pawns (and most of that game) alive.
+        private static System.WeakReference<Game> damageCacheGame;
+
+        private static void CheckDamageCacheGame()
+        {
+            Game game = Current.Game;
+            if (damageCacheGame != null && damageCacheGame.TryGetTarget(out Game cached) && cached == game)
+            {
+                return;
+            }
+            damageCacheGame = new System.WeakReference<Game>(game);
+            DamageCache.Clear();
+            DamageCache_Melee.Clear();
+            DamageCache_Ranged.Clear();
+            DamageCacheTimer = 0;
+            DamageCacheTimer_Melee = 0;
+            DamageCacheTimer_Ranged = 0;
+        }
+
         public static float GetSkillDamage(Pawn p)
         {
+            CheckDamageCacheGame();
             if(DamageCacheTimer < Current.Game.tickManager.TicksAbs)
             {
                 DamageCacheTimer = Current.Game.tickManager.TicksAbs + 2501;
@@ -3966,14 +3987,16 @@ namespace TorannMagic
                 if(p.equipment.Primary.def.IsMeleeWeapon)
                 {
                     result = GetSkillDamage_Melee(p, strFactor);
-                    compMight.weaponCritChance = GetWeaponCritChance(p.equipment.Primary);
-                    compMagic.weaponCritChance = GetWeaponCritChance(p.equipment.Primary);
+                    // A pawn can have only one of the two comps.
+                    float critChance = GetWeaponCritChance(p.equipment.Primary);
+                    if (compMight != null) compMight.weaponCritChance = critChance;
+                    if (compMagic != null) compMagic.weaponCritChance = critChance;
                 }
                 else
                 {
                     result = GetSkillDamage_Range(p, strFactor);
-                    compMight.weaponCritChance = 0f;
-                    compMagic.weaponCritChance = 0f;
+                    if (compMight != null) compMight.weaponCritChance = 0f;
+                    if (compMagic != null) compMagic.weaponCritChance = 0f;
                 }
             }
             else
@@ -4000,6 +4023,7 @@ namespace TorannMagic
 
         public static float GetSkillDamage_Melee(Pawn p, float strFactor)
         {
+            CheckDamageCacheGame();
             if (DamageCacheTimer_Melee < Current.Game.tickManager.TicksAbs)
             {
                 DamageCacheTimer_Melee = Current.Game.tickManager.TicksAbs + 2503;
@@ -4021,6 +4045,7 @@ namespace TorannMagic
 
         public static float GetSkillDamage_Range(Pawn p, float strFactor)
         {
+            CheckDamageCacheGame();
             if (DamageCacheTimer_Ranged < Current.Game.tickManager.TicksAbs)
             {
                 DamageCacheTimer_Ranged = Current.Game.tickManager.TicksAbs + 2502;

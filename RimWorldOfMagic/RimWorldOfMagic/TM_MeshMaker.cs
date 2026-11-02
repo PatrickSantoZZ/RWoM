@@ -21,7 +21,31 @@ namespace TorannMagic
 
         private static Vector2 lightningTop;
 
+        // Bolt meshes used to be built on every call and never destroyed (Eye of the Storm / Lightning Trap make
+        // up to 10 per tick). They are pooled now: per bolt length (in quarter cells) and amplitude at most
+        // BoltVariants random shapes are built, after that an existing one is reused. Callers only draw them.
+        private const int BoltVariants = 4;
+        private static readonly Dictionary<int, List<Mesh>> boltPool = new Dictionary<int, List<Mesh>>();
+
         public static Mesh NewBoltMesh(float distance, float amplitude)
+        {
+            int length = (int)Math.Round(distance * 4f);
+            int key = length * 1000 + Math.Min(999, Math.Max(0, (int)Math.Round(amplitude * 10f)));
+            if (!boltPool.TryGetValue(key, out List<Mesh> variants))
+            {
+                variants = new List<Mesh>();
+                boltPool[key] = variants;
+            }
+            if (variants.Count >= BoltVariants)
+            {
+                return variants[Rand.Range(0, variants.Count)];
+            }
+            Mesh mesh = BuildBoltMesh(length / 4f, amplitude);
+            variants.Add(mesh);
+            return mesh;
+        }
+
+        private static Mesh BuildBoltMesh(float distance, float amplitude)
         {
             TM_MeshMaker.lightningTop = new Vector2(Rand.Range(-0.2f, .2f), distance);
             TM_MeshMaker.MakeVerticesBase();

@@ -1,0 +1,5 @@
+# SDK build output (RimWorld 1.7)
+RimWorldOfMagic/RimWorldOfMagic/obj/v1.7/
+RimWorldOfMagic/RimWorldOfMagic/obj/project.*
+RimWorldOfMagic/RimWorldOfMagic/obj/*.nuget.*
+RimWorldOfMagic/RimWorldOfMagic/bin/
