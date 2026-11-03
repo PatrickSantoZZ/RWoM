@@ -6067,7 +6067,7 @@ namespace TorannMagic
             {
                 if (___pawn != null)
                 {
-                    if (___pawn.story.traits.HasTrait(TorannMagicDefOf.Undead))
+                    if (___pawn.story?.traits != null && ___pawn.story.traits.HasTrait(TorannMagicDefOf.Undead))
                     {
                         return false;
                     }
