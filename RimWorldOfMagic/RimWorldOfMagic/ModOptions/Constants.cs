@@ -98,16 +98,26 @@ namespace TorannMagic.ModOptions
                     existingPolicy = ap;
                 }
             }
+            ApparelPolicy defaultPolicy = Current.Game.outfitDatabase.DefaultOutfit();
             if (existingPolicy != null)
             {
                 undeadApparelPolicy = existingPolicy;
+                // Policies created by older versions shared the default policy's filter object
+                // for the rest of that session; give them their own filter.
+                if (defaultPolicy != null && defaultPolicy != existingPolicy && ReferenceEquals(existingPolicy.filter, defaultPolicy.filter))
+                {
+                    existingPolicy.filter = new ThingFilter();
+                    existingPolicy.filter.CopyAllowancesFrom(defaultPolicy.filter);
+                }
             }
             else
             {
                 undeadApparelPolicy = Current.Game.outfitDatabase.MakeNewOutfit();
                 undeadApparelPolicy.id = 67;
                 undeadApparelPolicy.label = "TM_UndeadVerbatum".Translate();
-                undeadApparelPolicy.filter = Current.Game.outfitDatabase.DefaultOutfit().filter;
+                // Copy the allowances; assigning the filter itself linked both policies.
+                if (defaultPolicy != null && defaultPolicy != undeadApparelPolicy)
+                    undeadApparelPolicy.CopyFrom(defaultPolicy);
             }
         }
 
