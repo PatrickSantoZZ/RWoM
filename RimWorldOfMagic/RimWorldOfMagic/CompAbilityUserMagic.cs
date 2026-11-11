@@ -2302,7 +2302,7 @@ namespace TorannMagic
                         {
                             for (int i = 0; i < this.MagicData.MagicPowersC.Count; i++)
                             {
-                                if (this.MagicData.MagicPowersC[i].abilityDef == TorannMagicDefOf.TM_Recall)
+                                if (this.MagicData.MagicPowersC[i].abilityDef != TorannMagicDefOf.TM_Recall)
                                 {
                                     this.MagicData.MagicPowersC[i].learned = true;
                                 }
