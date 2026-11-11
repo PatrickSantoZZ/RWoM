@@ -9,14 +9,24 @@ namespace TorannMagic
     {
         protected override void Impact(Thing hitThing, bool blockedByShield = false)
         {
-            Map map = base.Map;
-            //base.Impact(hitThing);
-            ThingDef def = this.def;
+            // Always remove the projectile, even if the effect fails; otherwise it stays and errors every tick
+            try
+            {
+                DoImpact(hitThing);
+            }
+            finally
+            {
+                if (!Destroyed) Destroy();
+            }
+        }
 
+        private void DoImpact(Thing hitThing)
+        {
             Pawn hitPawn = hitThing as Pawn;
             Pawn caster = this.launcher as Pawn;
-            CompAbilityUserMagic compHitPawn = hitPawn.GetCompAbilityUserMagic();            
+            CompAbilityUserMagic compHitPawn = hitPawn.GetCompAbilityUserMagic();
             CompAbilityUserMagic compCaster = caster.GetCompAbilityUserMagic();
+            if (compCaster == null) return;
 
             if (hitPawn != null && compHitPawn != null)
             {

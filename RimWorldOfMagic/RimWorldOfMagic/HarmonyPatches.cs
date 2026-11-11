@@ -901,6 +901,21 @@ namespace TorannMagic
             }
         }
 
+        // RimWorld 1.7: vanilla returns no hit flags for flyOverhead projectiles, and JecsLite 1.7 now asks CanHit()
+        // before hitting the target. Every flyOverhead spell projectile therefore impacted with no target.
+        // Restore the 1.6 behaviour (hit the intended target / the pawn in the target cell).
+        [HarmonyPatch(typeof(Projectile), "HitFlags", MethodType.Getter)]
+        public class Projectile_HitFlags_FlyOverheadAbility_Patch
+        {
+            private static void Postfix(Projectile __instance, ref ProjectileHitFlags __result)
+            {
+                if (__result == ProjectileHitFlags.None && __instance is AbilityUser.Projectile_AbilityBase && __instance.def?.projectile != null && __instance.def.projectile.flyOverhead)
+                {
+                    __result = ProjectileHitFlags.All;
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(CompPowerBattery), "DrawPower", null)]
         public class DrawPower_Patch
         {
